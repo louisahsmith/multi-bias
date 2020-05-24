@@ -1,0 +1,3 @@
+When selection into a study is based on convenience or poor sampling, or the resulting bias is due to loss to follow-up, we are usually interested in making some inference about a larger population from which we would have liked to be able to sample. 
+
+However, sometimes selection bias results when we are trying to study a subgroup within a larger population (e.g., in the obesity paradox example, where we are trying to infer something about people with heart disease). In the latter case, we make slightly different assumptions and get a different bound based on different parameters. This result corresponds to Result 5 in [*Smith & VanderWeele 2019*](https://journals.lww.com/epidem/fulltext/2019/07000/Bounding_Bias_Due_to_Selection.7.aspx#pdf-link)).

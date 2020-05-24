@@ -1,0 +1,45 @@
+#keep_alive {
+  visibility: hidden;
+}
+
+.katex {
+  font: normal 1.1em KaTeX_Main,"Times New Roman",serif;
+  font-style: normal;
+  font-weight: 350;
+  line-height: 1.2;
+  text-indent: 0;
+  text-rendering: auto;
+}
+img {
+  float: right;
+  margin: 10px 10px 10px 0;
+  width: 35%;
+  vertical-align: middle;
+  font-size: 0;
+  line-height: 0;
+}
+
+ul {
+  padding-inline-start: 20px;
+}
+
+.well{
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.nav-tabs > li {
+    float:none;
+    display:inline-block;
+    zoom:1;
+}
+
+.nav-tabs {
+    text-align:center;
+}
+
+h3, .h3 {
+font-size: 20px;
+}
+
+
