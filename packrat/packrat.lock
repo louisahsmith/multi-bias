@@ -11,16 +11,16 @@ Hash: 15f597ed227897f4f793b6161260f4b9
 Package: EValue
 Source: github
 Version: 2.0.0
-Hash: dffd15369f64a7b70712edbf9e722c2a
+Hash: f21f391586d872499493bb4db2eb9d84
 GithubRepo: evalue
 GithubUsername: louisahsmith
 GithubRef: install_github
-GithubSha1: fbc7df07be6546b1dda9c7cde46a9f4811237ef9
+GithubSha1: 5a5247001f1a7ade33ecc68cc077a384058eb9ab
 RemoteHost: api.github.com
 RemoteRepo: evalue
 RemoteUsername: louisahsmith
 RemoteRef: install_github
-RemoteSha: fbc7df07be6546b1dda9c7cde46a9f4811237ef9
+RemoteSha: 5a5247001f1a7ade33ecc68cc077a384058eb9ab
 
 Package: R.cache
 Source: CRAN
