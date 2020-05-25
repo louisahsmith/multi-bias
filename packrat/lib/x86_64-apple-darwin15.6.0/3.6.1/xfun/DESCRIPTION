@@ -28,6 +28,6 @@ Maintainer: Yihui Xie <xie@yihui.name>
 Repository: CRAN
 Date/Publication: 2019-11-12 17:40:02 UTC
 Built: R 3.6.0; ; 2019-11-14 00:35:42 UTC; unix
-InstallAgent: packrat 0.5.0.6
+InstallAgent: packrat 0.5.0
 InstallSource: CRAN
 Hash: d9465c5b37edf541913d74968461fc61

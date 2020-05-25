@@ -29,6 +29,6 @@ Packaged: 2019-01-07 12:00:43.681885 UTC; edd
 Repository: CRAN
 Date/Publication: 2019-01-07 19:50:25 UTC
 Built: R 3.6.0; ; 2019-04-26 19:51:17 UTC; unix
-InstallAgent: packrat 0.5.0.6
+InstallAgent: packrat 0.5.0
 InstallSource: CRAN
 Hash: 15f597ed227897f4f793b6161260f4b9

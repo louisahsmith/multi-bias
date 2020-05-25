@@ -24,6 +24,6 @@ Date/Publication: 2019-10-04 23:00:08 UTC
 Built: R 3.6.0; x86_64-apple-darwin15.6.0; 2019-10-05 12:02:29 UTC;
     unix
 Archs: htmltools.so.dSYM
-InstallAgent: packrat 0.5.0.6
+InstallAgent: packrat 0.5.0
 InstallSource: CRAN
-Hash: ede066c0aec518db9acda803c6b94503
+Hash: 140efd8a56fc8404e81f7ac44731ce47

@@ -3,58 +3,15 @@ library(shinythemes)
 library(sortable)
 library(EValue)
 library(bsplus)
-library(rlang)
 
-poss_misclassification <- purrr::possibly(misclassification, otherwise = NA)
-poss_selection <- purrr::possibly(selection, otherwise = NA)
-
-get_selection_args <- function(bias) {
-  logs <- unlist(attributes(bias)[c("selected", "selected", "increased_risk", "decreased_risk", "SU")])
-  logs[1] <- !logs[1]
-  paste0("selection(", 
-         paste(c("\"general\"", "\"selected\"", "\"increased risk\"", 
-                 "\"decreased risk\"", "\"S = U\"")[logs],
-               collapse = ", "), ")")
-}
-
-get_misclassification_args <- function(bias) {
-  logs <- attributes(bias)[c("names", "rare_outcome", "rare_exposure")]
-  nm <- sub(pattern = "\\smisclassification", "", logs$names)
-  logs$names <- NULL
-  logs[sapply(logs, is.null)] <- NULL
-  after_nm <- ifelse(length(logs) > 0, "\", ", "\"")
-  paste0("misclassification(\"", nm, after_nm, 
-         paste(paste(names(logs), logs, sep = " = "), collapse = ", "), 
-         ")")
-}
-
-get_confounding_args <- function(bias) {
-  "confounding()"
-}
-
-get_bias_args <- function(bias) {
-  arg_func <- switch(names(bias), 
-                     "confounding" = get_confounding_args,
-                     "selection" = get_selection_args,
-                     "outcome misclassification" = get_misclassification_args,
-                     "exposure misclassification" = get_misclassification_args)
-  arg_func(bias)
-}
-
-get_multibias_args <- function(multi) {
-  biases <- lapply(multi, get_bias_args)
-  paste0("multi_bias(\n", paste(biases, collapse = ",\n"), ")")
-}
-
-
-
+source("setup.R")
 
 #### UI component --------------------------------------------------
 ui <- navbarPage(
   title = "Multiple-bias sensitivity analysis using bounds",
   id = "navbar",
   theme = shinytheme("united"),
-  
+
   tabPanel(
     shinyjs::useShinyjs(),
     title = "Sensitivity analysis",
@@ -88,7 +45,7 @@ ui <- navbarPage(
       # my CSS additions
       tags$link(rel = "stylesheet", type = "text/css", href = "style.css")
     ),
-    
+
     sidebarLayout(
       mainPanel(
         # providing content for models
@@ -110,7 +67,7 @@ ui <- navbarPage(
           body = includeMarkdown("content/parameters.md"),
           size = "medium"
         ),
-        
+
         # BIAS CHOICES ----
         h2("Choose biases of interest for sensitivity analysis"),
         # from example at https://rstudio.github.io/sortable/
@@ -134,7 +91,7 @@ ui <- navbarPage(
             input_id = "biases"
           )
         ),
-        
+
         fluidRow(
           # if misclassification chosen
           column(
@@ -166,7 +123,7 @@ ui <- navbarPage(
                   ),
                   width = "100%", inline = TRUE, selected = character(0)
                 ),
-                
+
                 radioButtons(
                   "rareExposure",
                   label = p("Is the exposure sufficiently rare that the odds ratio for the exposure is approximately equivalent to a risk ratio?"),
@@ -179,7 +136,7 @@ ui <- navbarPage(
                 )
               ), # end rareness panel
             ), # end misclassification conditional panel
-            
+
             conditionalPanel( # disabled version of above
               condition = "!input.biases.includes('misclassification')",
               radioButtons(
@@ -223,7 +180,7 @@ ui <- navbarPage(
               )
             ) # end conditional rare exposure panel
           ), # end misclassification column
-          
+
           # if selection bias chosen
           column(
             6, conditionalPanel(
@@ -297,15 +254,14 @@ ui <- navbarPage(
         ), # end fluid column
         width = 7
       ), # ends main panel
-      
+
       # SENSITIVITY ANALYSIS TABSET ----
       sidebarPanel(
         width = 5,
         tabsetPanel(
           type = "pills",
           id = "sensOpts",
-          
-          
+
           # enter estimate ----
           tabPanel(
             "Observed estimate",
@@ -335,8 +291,9 @@ ui <- navbarPage(
             ), # end rareness
             div(p("Point estimate")),
             numericInput("est",
-                         label = NULL, value = NA, min = 0, step = .1, 
-                         width = "50%"),
+              label = NULL, value = NA, min = 0, step = .1,
+              width = "50%"
+            ),
             div(p("Confidence interval (optional)")),
             flowLayout(
               numericInput("lo", label = tags$small("Lower limit"), value = NA, min = 0, step = .1),
@@ -344,7 +301,7 @@ ui <- navbarPage(
               cellArgs = list(style = "width:110px;")
             )
           ), # end estimate tab
-          
+
           # calculate bound ----
           tabPanel(
             "Multi-bias bound",
@@ -370,7 +327,7 @@ ui <- navbarPage(
             splitLayout(
               uiOutput("b7")
             ),
-            
+
             uiOutput("bound"),
             conditionalPanel(
               condition = "output.bound",
@@ -378,29 +335,56 @@ ui <- navbarPage(
                 actionButton("showcode", "Show R code"),
                 # actionButton("clearbutton", "Clear"),
                 cellArgs = list(style = "width:110px;")
-              )),
+              )
+            ),
             br(),
             conditionalPanel(
               condition = "input.showcode && output.bound",
-              uiOutput("bound_code", 
-                       container = tags$pre)
+              uiOutput("bound_code",
+                container = tags$pre
+              )
             ),
             use_bs_popover(),
           ), # end parameters panel
-          
+
           # calculate e-value ----
-          tabPanel("Multi-bias E-value", 
-                   br(),
-                   conditionalPanel(
-                     condition = "input.est",
-                   tags$span(p("Calculate a multi-bias E-value with respect to what \"true\" value?"), 
-                             p(tags$small("(Defaults to 1, the null value.)"))),
-                   numericInput("true", 
-                                label = NULL,
-                                value = 1, min = 0, step = .1, width = "25%"
-                   )),
-                   uiOutput("evalue"),
-                   textOutput("keep_alive"))
+          tabPanel(
+            "Multi-bias E-value",
+            conditionalPanel(
+              condition = "!output.evalue",
+              br()
+              ),
+            uiOutput("evalue"),
+            br(),
+            conditionalPanel(
+              condition = "input.est",
+              tags$span(
+                p("The default multi-bias E-value is the strength of bias that 
+                  would be sufficient to shift the estimate to the null value. 
+                  If you'd like to calculate a non-null E-value, change the \"true\" value here.")
+              ),
+              numericInput("true",
+                           label = NULL,
+                           value = 1, min = 0, step = .1, width = "25%"
+              )
+            ),
+            conditionalPanel(
+              condition = "output.evalue",
+              flowLayout(
+                actionButton("showcodeE", "Show R code"),
+                # actionButton("clearbutton", "Clear"),
+                cellArgs = list(style = "width:110px;")
+              )
+            ),
+            br(),
+            conditionalPanel(
+              condition = "input.showcodeE && output.evalue",
+              uiOutput("evalue_code",
+                       container = tags$pre
+              )
+            ),
+            textOutput("keep_alive")
+          )
         ) # end tabset panel
       ) # end sidebar
     )
@@ -419,14 +403,13 @@ server <- function(input, output, session) {
   shinyjs::disable("rareOutcomeFake")
   shinyjs::disable("pop_group_SFake")
   shinyjs::disable("assump_SFake")
-  
+
   # what will be blank text to prevent page grey-out
   output$keep_alive <- renderText({
     req(input$alive_count)
     input$alive_count
   })
-  
-  
+
   # remove all extra assumptions if selected pop chosen
   observe({
     if (!is.null(input$pop_group_S) && input$pop_group_S == "selected") {
@@ -436,17 +419,17 @@ server <- function(input, output, session) {
     }
     updateCheckboxGroupInput(session, "assump_S", selected = x)
   })
-  
+
   #### BIAS CHOICES -----------------------------------------------
   biases <- reactive({
     # don't run if nothing entered
     req(input$biases)
-    
+
     # which biases
     yes_confounding <- "confounding" %in% input$biases
     yes_selection <- "selection" %in% input$biases
     yes_misclassification <- "misclassification" %in% input$biases
-    
+
     # selection arguments -----
     # can't do selection without choice of population
     if (yes_selection) req(input$pop_group_S)
@@ -460,7 +443,7 @@ server <- function(input, output, session) {
       pop_group_S == "selected",
       S_eq_U, risk_inc, risk_dec
     )]
-    
+
     # misclassification arguments ----
     # can't do misclassification without choice of type
     if (yes_misclassification) req(input$misclassType)
@@ -474,22 +457,22 @@ server <- function(input, output, session) {
     } else {
       rare_outcome <- rare_exposure <- FALSE
     } # defaults
-    
+
     # misclassification before selection
     misclass_first <- yes_selection && yes_misclassification &&
       (which(input$biases == "misclassification") <
-         which(input$biases == "selection"))
-    
+        which(input$biases == "selection"))
+
     # put it all together
     arg1 <- if (yes_confounding) confounding()
     arg2 <- if (yes_selection) poss_selection(selection_args)
     arg3 <- if (yes_misclassification) {
       poss_misclassification(misclassification_type, # return NA if error
-                             rare_outcome = rare_outcome,
-                             rare_exposure = rare_exposure
+        rare_outcome = rare_outcome,
+        rare_exposure = rare_exposure
       )
     }
-    
+
     # should be the only possible errors (given validation)
     if (yes_misclassification && !is.null(arg3) && is.na(arg3)) {
       return(NULL)
@@ -497,29 +480,29 @@ server <- function(input, output, session) {
     if (yes_selection && !is.null(arg2) && is.na(arg2)) {
       return(NULL)
     }
-    
+
     if (misclass_first) {
       arg4 <- arg2
       arg2 <- arg3
       arg3 <- arg4
     }
-    
+
     args <- list(arg1, arg2, arg3)
     args[sapply(args, is.null)] <- NULL
     biases <- do.call(multi_bias, args)
     return(biases)
   }) # end biases()
-  
+
   # for the conditional panel -- how many (out of 7) show up?
   lapply(1:7, function(i) {
     output[[paste0("a", i)]] <- reactive({
       n <- nrow(summary(biases()))
       ifelse(is.null(n), "no",
-             ifelse(i > n, "no", "yes")
+        ifelse(i > n, "no", "yes")
       )
     })
   })
-  
+
   outputOptions(output, "a1", suspendWhenHidden = FALSE)
   outputOptions(output, "a2", suspendWhenHidden = FALSE)
   outputOptions(output, "a3", suspendWhenHidden = FALSE)
@@ -527,62 +510,59 @@ server <- function(input, output, session) {
   outputOptions(output, "a5", suspendWhenHidden = FALSE)
   outputOptions(output, "a6", suspendWhenHidden = FALSE)
   outputOptions(output, "a7", suspendWhenHidden = FALSE)
-  
+
   # create as many as 7 conditional panels, one for each parameter
   lapply(1:7, function(i) {
     output[[paste0("b", i)]] <- renderUI({
-      
+
       # validate for the first one (so messages don't output 7 times)
       if (i == 1) {
-        validate(need(input$biases, "Select biases"))
+        validate(need(input$biases, "Select biases..."))
         if ("misclassification" %in% input$biases) {
-          validate(need(input$misclassType, "Select outcome or exposure misclassification"))
+          validate(need(input$misclassType, "Select outcome or exposure misclassification..."))
         }
         if ("selection" %in% input$biases) {
-          validate(need(input$pop_group_S, "Choose target population"))
+          validate(need(input$pop_group_S, "Choose target population..."))
         }
         if ("selection" %in% input$biases && "increased_risk" %in% input$assump_S) {
-          validate(need(!"decreased_risk" %in% input$assump_S, "Conflicting assumptions"))
+          validate(need(!"decreased_risk" %in% input$assump_S, "Conflicting assumptions!"))
         }
-        
+
         if ("misclassification" %in% input$biases && input$misclassType == "exposure") {
           validate(
-            need(input$rareOutcome, "Specify whether outcome is rare"),
-            need(
-              input$rareExposure,
-              "Specify whether exposure is rare"
-            ),
+            need(input$rareOutcome, "Specify whether outcome is rare..."),
+            need(input$rareExposure, "Specify whether exposure is rare..."),
             need(
               is.null(input$rareOutcome) || (!is.null(input$rareOutcome) && input$rareOutcome == "yes"),
-              "Sorry! Currently only available for exposure misclassification with rare outcomes"
+              "Sorry! Currently only available for exposure misclassification with rare outcomes."
             )
           )
         }
       } # end first one only
-      
+
       summary_biases <- summary(biases(), latex = TRUE)
       # needs to be an object with a non-null number of rows
       req(nrow(summary_biases))
-      
+
       # make the last one smaller so they match
       wi <- ifelse(i == 7, "50%", "100%")
       tagList(
         conditionalPanel(
           condition = paste0("output.a", i, "=='yes'"),
-          
+
           numericInput(summary_biases$argument[i],
-                       label = summary_biases$latex[i],
-                       value = NA, min = 1,
-                       step = .1, width = wi
+            label = summary_biases$latex[i],
+            value = NA, min = 1,
+            step = .1, width = wi
           )
         ),
-        
+
         tags$script(paste0('renderMathInElement(document.getElementById("b', i, '"),
                         {delimiters: [{left: "$", right: "$", display: false}]});'))
       )
     }) # end b outputs
   }) # end lapply
-  
+
   # CALCULATE BOUND ----
   param_vals <- reactive({
     req(biases())
@@ -593,53 +573,23 @@ server <- function(input, output, session) {
     })
     setNames(vals, args)
   })
-  
+
   bounds <- reactive({
     vals <- param_vals()
     vals$biases <- biases()
     do.call(multi_bound, vals)
   })
   
-  vals_for_eval <- reactive({
-    req(input$measure)
-    req(input$est)
-    est <- if (input$measure == "RR") RR(input$est)
-    else measure(input$est, rare = input$rare)
-    list(est = est,
-      lo = input$lo,
-      hi = input$hi,
-      true = input$true)
-  })
-  
-  ## START HERE: make risk ratio panel, etc shorter; hide true E-value until biases and estimate are filled in
-  evalues <- reactive({
-    validate(need(input$biases, "Select biases"),
-             need(input$est, "Enter an estimate"))
-    vals <- vals_for_eval()
-    res <- multi_evalue(biases = biases(),
-                 est = vals$est,
-                 lo = vals$lo,
-                 hi = vals$hi,
-                 true = vals$true)
-    first <- paste0("Multi-bias E-value: ", round(summary(res), 2))
-    second <- ifelse(any(!is.na(res[2, 2:3])), 
-                     paste0("For confidence limit closest to the null: ", round(res[2, 2:3][!is.na(res[2, 2:3])], 2)),
-                     "")
-    list(first, second)
-  })
-  
   rcode_bound <- reactive({
     req(bounds())
     bias_code <- get_multibias_args(biases())
     vals <- param_vals()
-    vals <- paste(paste(names(vals), vals, sep = " = "), 
-                  collapse = ", ")
+    vals <- paste(paste(names(vals), vals, sep = " = "),
+                  collapse = ", "
+    )
     styler::style_text(
-      paste0("library(EValue)\n\nmulti_bound(\n", bias_code, ",\n", vals, ")"))
-  })
-  
-  rcode_evalue <- reactive({
-    
+      paste0("library(EValue)\n\nmulti_bound(\nbiases = ", bias_code, ",\n", vals, ")")
+    )
   })
   
   output$bound <- renderUI({
@@ -649,14 +599,76 @@ server <- function(input, output, session) {
   output$bound_code <- renderPrint({
     rcode_bound()
   })
-  
+
+  # CALCULATE E-VALUE ----
+  vals_for_eval <- reactive({
+    req(input$measure)
+    req(input$est)
+    est <- if (input$measure == "RR") {
+      RR(input$est)
+    } else if (input$measure == "HR") {
+      HR(input$est, rare = input$rareOutcomeEst == "yes")
+    } else if (input$measure == "OR") {
+      OR(input$est, rare = input$rareOutcomeEst == "yes")
+    } 
+    list(
+      est = est,
+      lo = input$lo,
+      hi = input$hi,
+      true = input$true
+    )
+  })
+
+  evalues <- reactive({
+    validate(
+      need(input$biases, "Select biases..."),
+      need(input$est, "Enter an estimate...")
+    )
+    vals <- vals_for_eval()
+    res <- multi_evalue(
+      biases = biases(),
+      est = vals$est,
+      lo = vals$lo,
+      hi = vals$hi,
+      true = vals$true
+    )
+    first <- paste0("Multi-bias E-value: ", round(summary(res), 2))
+    second <- ifelse(any(!is.na(res[2, 2:3])),
+      paste0("E-value for confidence limit closest to the null: ", round(res[2, 2:3][!is.na(res[2, 2:3])], 2)),
+      ""
+    )
+    list(first, second)
+  })
+
+  rcode_evalue <- reactive({
+    req(evalues())
+    bias_code <- get_multibias_args(biases())
+    vals <- vals_for_eval()
+    att <- attributes(vals$est)
+    measure <- paste0(att$class[1], "(", vals$est, {
+      if (!is.null(att$rare)) paste0(", rare = ", att$rare)
+    }, "), ")
+                      
+    ecode <- paste0(
+      "library(EValue)\n\nmulti_evalue(biases = ", bias_code, ",\n est = ",
+      measure, {
+        if (!is.na(vals$lo)) paste0("lo = ", vals$lo, ", ")
+        if (!is.na(vals$hi)) paste0("hi = ", vals$hi, ", ")
+      }, "true = ", vals$true, ")")
+    
+    styler::style_text(ecode)
+  })
+
   output$evalue <- renderUI({
     tags$div(
-    h4(evalues()[[1]]),
-    h5(evalues()[[2]])
+      h4(evalues()[[1]]),
+      h5(evalues()[[2]])
     )
   })
   
+  output$evalue_code <- renderPrint({
+    rcode_evalue()
+  })
 }
 
 # Run the application

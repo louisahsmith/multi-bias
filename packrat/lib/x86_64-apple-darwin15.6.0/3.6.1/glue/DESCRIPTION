@@ -31,6 +31,6 @@ Date/Publication: 2019-03-12 22:30:02 UTC
 Built: R 3.6.0; x86_64-apple-darwin15.6.0; 2019-04-26 19:50:38 UTC;
     unix
 Archs: glue.so.dSYM
-InstallAgent: packrat 0.5.0.6
+InstallAgent: packrat 0.5.0
 InstallSource: CRAN
 Hash: 660bbbe3803c7cf7c9489a7d99a9c0ed

@@ -21,6 +21,6 @@ GithubUsername: rstudio
 GithubRef: master
 GithubSHA1: 1ff9fbd6b1874c0332c8b94b7c846c9a0470c339
 Built: R 3.6.1; ; 2019-11-11 12:22:25 UTC; unix
-InstallAgent: packrat 0.5.0.6
+InstallAgent: packrat 0.5.0
 InstallSource: github
 Hash: 493c586738267204a22f6ca36e99182f

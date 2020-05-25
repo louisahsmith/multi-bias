@@ -30,6 +30,6 @@ Date/Publication: 2019-10-04 23:00:05 UTC
 Built: R 3.6.0; x86_64-apple-darwin15.6.0; 2019-10-05 14:55:24 UTC;
     unix
 Archs: promises.so.dSYM
-InstallAgent: packrat 0.5.0.6
+InstallAgent: packrat 0.5.0
 InstallSource: CRAN
-Hash: bc30fea4d94b60c9e01b0fae2bc305a2
+Hash: 3ef1a1f397436d31eaaadf1a8f50394d

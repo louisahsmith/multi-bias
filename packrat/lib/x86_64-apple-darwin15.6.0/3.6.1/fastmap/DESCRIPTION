@@ -28,6 +28,6 @@ Date/Publication: 2019-10-08 05:20:02 UTC
 Built: R 3.6.0; x86_64-apple-darwin15.6.0; 2019-10-09 15:56:47 UTC;
     unix
 Archs: fastmap.so.dSYM
-InstallAgent: packrat 0.5.0.6
+InstallAgent: packrat 0.5.0
 InstallSource: CRAN
 Hash: d272cd728e4095b3964181b44763f46c

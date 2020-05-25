@@ -34,6 +34,6 @@ Date/Publication: 2019-10-04 05:00:02 UTC
 Built: R 3.6.0; x86_64-apple-darwin15.6.0; 2019-10-05 12:17:52 UTC;
     unix
 Archs: later.so.dSYM
-InstallAgent: packrat 0.5.0.6
+InstallAgent: packrat 0.5.0
 InstallSource: CRAN
-Hash: f999504e0da32a7b6a59ed140e80fb32
+Hash: 074cadbb9efd565454f7df6a2a56a672
