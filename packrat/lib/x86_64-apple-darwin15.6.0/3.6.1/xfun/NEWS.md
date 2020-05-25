@@ -1,3 +1,25 @@
+# CHANGES IN xfun VERSION 0.14
+
+## NEW FEATURES
+
+- The `cache_rds()` function can invalidate the cache automatically when the code passed to its `expr` argument has changed. Two new arguments, `hash` and `clean` were added to this function to make it more useful and powerful. See the help page `?xfun::cache_rds()` for more information.
+
+# CHANGES IN xfun VERSION 0.13
+
+## NEW FEATURES
+
+- Added a new function `cache_rds()` to cache an R expression to a `*.rds` file.
+
+- Added a new function `Rscript_call()` to call a function (with arguments) in a new R session via the command `Rscript`.
+
+- The `recheck` argument of `rev_check()` can take a vector of package names, and only these packages will be checked. See `?xfun::rev_check` for more details.
+
+# CHANGES IN xfun VERSION 0.12
+
+## NEW FEATURES
+
+- Added a new function `split_lines()`.
+
 # CHANGES IN xfun VERSION 0.11
 
 ## BUG FIXES
