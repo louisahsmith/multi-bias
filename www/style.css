@@ -43,3 +43,45 @@ font-size: 20px;
 }
 
 
+.default-sortable.bucket-list-container {
+background-color: transparent;
+padding: 0px; 
+margin: 0px; 
+}
+
+.default-sortable.rank-list-container {
+margin-left: 0px;
+}
+
+h2, .h2 {
+  margin-top: 0px;
+  font-size: 23px;
+}
+
+.well {
+margin-top: 18px;
+padding:10px;
+  
+}
+
+.tab-content {
+margin-left: 10px;
+margin-right: 10px;
+}
+
+
+ .col-sm-8{
+position: relative;
+min-height: 1px;
+padding-left: 0px;
+padding-right: 0px;
+}
+
+.col-sm-4{
+  padding-right:0px;
+}
+
+.row {
+margin-left: 0px;
+margin-right: 0px;
+}
