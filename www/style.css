@@ -70,18 +70,38 @@ margin-right: 10px;
 }
 
 
- .col-sm-8{
+ .col-sm-7{
 position: relative;
 min-height: 1px;
 padding-left: 0px;
 padding-right: 0px;
 }
 
-.col-sm-4{
+.col-sm-5{
   padding-right:0px;
 }
 
 .row {
 margin-left: 0px;
 margin-right: 0px;
+}
+
+.control-label{
+  font-weight: normal;
+}
+
+pre {
+background-color:  #ffffff;
+}
+
+#misclassTypeFake, #rareExposureFake, 
+#rareOutcomeFake, #pop_group_SFake, #assump_SFake{
+  color: LightGray;
+}
+
+.nav>li>a {
+position: relative;
+display: block;
+padding-left: 10px;
+padding-right: 10px;
 }
