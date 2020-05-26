@@ -1,4 +1,3 @@
-remotes::install_github("louisahsmith/evalue@install_github")
 library(shiny)
 library(shinythemes)
 library(sortable)
