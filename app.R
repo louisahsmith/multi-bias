@@ -1,7 +1,8 @@
+remotes::install_github("louisahsmith/evalue@install_github")
 library(shiny)
 library(shinythemes)
 library(sortable)
-library(EValue)
+library(MEValue)
 library(bsplus)
 
 source("setup.R")
